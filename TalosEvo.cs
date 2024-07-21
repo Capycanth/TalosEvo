@@ -1,6 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ChekhovsUtil;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
+using TalosEvo.Core.World;
 
 namespace TalosEvo
 {
@@ -8,6 +11,7 @@ namespace TalosEvo
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private World world;
 
         public TalosEvo()
         {
@@ -21,6 +25,8 @@ namespace TalosEvo
             // TODO: Add your initialization logic here
 
             base.Initialize();
+            ChekhovSettings.Initialize("TalosEvo_v1.0");
+            world = new World(720, 480, new Random().Next(), GraphicsDevice);
         }
 
         protected override void LoadContent()
@@ -42,9 +48,11 @@ namespace TalosEvo
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+            world.Draw(_spriteBatch);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
