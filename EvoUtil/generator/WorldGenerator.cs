@@ -85,7 +85,7 @@ namespace TalosEvo.EvoUtil.generator
                     startX = random.Next(width);
                     startY = random.Next(height);
                 }
-                GenerateRiver(startX, startY, 1, 0.05f);
+                GenerateRiver(startX, startY, 1, 0.1f);
             }
 
             for (int x = 0; x < width; x++)
@@ -106,7 +106,7 @@ namespace TalosEvo.EvoUtil.generator
             int y = startY;
             float cumulativeHeightIncrease = 0f;
 
-            for (int i = 0; i < random.NextInt64(400, 1200); i++) // Arbitrary river length
+            for (int i = 0; i < random.NextInt64(600, 1200); i++) // Arbitrary river length
             {
                 if (x < 0 || x >= width || y < 0 || y >= height) break;
 

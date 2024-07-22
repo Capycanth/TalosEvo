@@ -5,9 +5,8 @@
         Tundra = 0,
         Desert = 1,
         Grassland = 2,
-        Mediterranean = 3,
-        ConiferousForest = 4,
-        Savannah = 5,
+        ConiferousForest = 4, // Remove?
+        Savannah = 5, // Remove?
         Jungle = 6,
         TemperateForest = 7,
         Swamp = 8,
