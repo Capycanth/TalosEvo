@@ -63,9 +63,9 @@ namespace TalosEvo.EvoUtil.generator
                     float nx = x / (float)width;
                     float ny = y / (float)height;
 
-                    HeightMap[x, y] = noise.Noise(nx * 5, ny * 5, persistence: 0.6f, amplitudeScaling: 2f, frequencyScaling: 0.65f);
-                    TemperatureMap[x, y] = noise.Noise(nx * 5 + 100, ny * 5 + 100, persistence: 0.6f, amplitudeScaling: 2f, frequencyScaling: 0.65f);
-                    RainfallMap[x, y] = noise.Noise(nx * 5 + 50, ny * 5 + 50, persistence: 0.6f, amplitudeScaling: 2f, frequencyScaling: 0.65f);
+                    HeightMap[x, y] = noise.Noise(nx * 5, ny * 5, persistence: 0.5f, amplitudeScaling: 3f, frequencyScaling: 0.85f);
+                    TemperatureMap[x, y] = noise.Noise(nx * 5 + 100, ny * 5 + 100, persistence: 0.8f, amplitudeScaling:3f, frequencyScaling: 0.3f);
+                    RainfallMap[x, y] = noise.Noise(nx * 5 + 50, ny * 5 + 50, persistence: 0.4f, amplitudeScaling: 3f, frequencyScaling: 0.6f);
                 }
             }
             HeightMap = NormalizeNoise(HeightMap, "HeightMap");
@@ -85,14 +85,14 @@ namespace TalosEvo.EvoUtil.generator
                     startX = random.Next(width);
                     startY = random.Next(height);
                 }
-                GenerateRiver(startX, startY, 1);
+                GenerateRiver(startX, startY, 1, 0.05f);
             }
 
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    if (HeightMap[x, y] < 0.30f && RainfallMap[x,y] > 0.3f && TemperatureMap[x,y] > 0.3f) // Arbitrary threshold for lakes
+                    if (HeightMap[x, y] < 0.30f && RainfallMap[x,y] > 0.3f && TemperatureMap[x,y] > 0.1f) // Arbitrary threshold for lakes
                     {
                         LakeMap[x, y] = true;
                     }
@@ -100,11 +100,13 @@ namespace TalosEvo.EvoUtil.generator
             }
         }
 
-        private void GenerateRiver(int startX, int startY, int riverWidth)
+        private void GenerateRiver(int startX, int startY, int riverWidth, float maxHeightIncrease)
         {
             int x = startX;
             int y = startY;
-            for (int i = 0; i < 1000; i++) // Arbitrary river length
+            float cumulativeHeightIncrease = 0f;
+
+            for (int i = 0; i < random.NextInt64(400, 1200); i++) // Arbitrary river length
             {
                 if (x < 0 || x >= width || y < 0 || y >= height) break;
 
@@ -114,6 +116,7 @@ namespace TalosEvo.EvoUtil.generator
                 int nextX = x;
                 int nextY = y;
                 float minHeight = HeightMap[x, y];
+                bool foundDescent = false;
 
                 for (int dx = -1; dx <= 1; dx++)
                 {
@@ -128,12 +131,21 @@ namespace TalosEvo.EvoUtil.generator
                                 minHeight = HeightMap[nx, ny];
                                 nextX = nx;
                                 nextY = ny;
+                                foundDescent = true;
                             }
                         }
                     }
                 }
 
-                if (nextX == x && nextY == y) break; // No descent, stop the river
+                if (!foundDescent)
+                {
+                    // Increase elevation slightly if no descent is found
+                    HeightMap[x, y] += 0.01f;
+                    cumulativeHeightIncrease += 0.01f;
+                    if (cumulativeHeightIncrease > maxHeightIncrease) break;
+                    continue;
+                }
+
                 x = nextX;
                 y = nextY;
             }

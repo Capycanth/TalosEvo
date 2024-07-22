@@ -37,7 +37,7 @@ namespace TalosEvo.EvoUtil
             {
                 if (isLake) return Biome.Lake;
                 if (isRiver) return Biome.River;
-                if (elevation > 0.90f) return Biome.Mountain;
+                if (elevation > 0.85f) return Biome.Mountain;
 
                 int adjustedRain = (int)Math.Floor(rainfall * 20);
                 if (adjustedRain == 20) adjustedRain = 19;
@@ -54,7 +54,7 @@ namespace TalosEvo.EvoUtil
                     Biome.Desert => Color.SandyBrown,
                     Biome.Grassland => Color.LightGreen,
                     Biome.Tundra => Color.LightGray,
-                    Biome.Mountain => Color.Gray,
+                    Biome.Mountain => Color.Brown,
                     Biome.River => Color.Blue,
                     Biome.Lake => Color.DarkBlue,
                     Biome.Jungle => Color.DarkGreen,
