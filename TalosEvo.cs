@@ -18,6 +18,8 @@ namespace TalosEvo
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            _graphics.PreferredBackBufferWidth = 1080;
+            _graphics.PreferredBackBufferHeight = 720;
         }
 
         protected override void Initialize()
@@ -26,7 +28,7 @@ namespace TalosEvo
 
             base.Initialize();
             ChekhovSettings.Initialize("TalosEvo_v1.0");
-            world = new World(720, 480, new Random().Next(), GraphicsDevice);
+            world = new World(1080, 720, new Random().Next(), GraphicsDevice);
         }
 
         protected override void LoadContent()

@@ -29,7 +29,7 @@ namespace TalosEvo.EvoUtil.perlin
          *             A higher lacunarity value means the frequencies increase more rapidly, resulting in finer details being added to the noise pattern. 
          *             It determines the "gap" between successive frequencies.
          */
-        public float Noise(float x, float y, int octaves = 6, float persistence = 0.5f, float lacunarity = 2.0f, float amplitudeScaling = 1.0f)
+        public float Noise(float x, float y, int octaves = 8, float persistence = 0.5f, float lacunarity = 2.0f, float amplitudeScaling = 1.0f, float frequencyScaling = 1)
         {
 
             /* The total is the final noise value obtained by summing the contributions from all octaves. 
@@ -39,11 +39,11 @@ namespace TalosEvo.EvoUtil.perlin
             /* The frequency determines the scale of the noise. 
              * Higher frequencies result in more rapid changes and finer details in the noise pattern, while lower frequencies result in smoother, broader features. 
              * Frequency typically doubles with each successive octave to add more detail. */
-            float frequency = amplitudeScaling;
+            float frequency = frequencyScaling;
             /* The amplitude determines the influence or weight of each noise layer. 
              * Higher amplitudes result in larger contributions from that octave to the final noise value. 
              * Amplitude typically decreases with each successive octave to ensure higher-frequency noise has less impact, making the overall noise smoother. */
-            float amplitude = 1;
+            float amplitude = amplitudeScaling;
             float maxValue = 0;
 
             for (int i = 0; i < octaves; i++)

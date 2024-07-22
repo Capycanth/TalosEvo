@@ -1,25 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TalosEvo.Core.enumeration
+﻿namespace TalosEvo.Core.enumeration
 {
-    public enum Biome
+    public enum Biome : byte
     {
-        Desert,
-        Forest,
-        Grassland,
-        Tundra,
-        Jungle,
-        Savanna,
-        Taiga,
-        Wetlands,
-        Alpine,
+        Tundra = 0,
+        Desert = 1,
+        Grassland = 2,
+        Mediterranean = 3,
+        ConiferousForest = 4,
+        Savannah = 5,
+        Jungle = 6,
+        TemperateForest = 7,
+        Swamp = 8,
+        Arctic = 9,
         // Special Biomes
-        Mountain,
-        River,
-        Lake
+        Mountain = 10,
+        River = 11,
+        Lake = 12,
     }
 }

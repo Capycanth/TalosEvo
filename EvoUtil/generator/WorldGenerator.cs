@@ -44,8 +44,8 @@ namespace TalosEvo.EvoUtil.generator
             stopwatch.Restart();
 
             CalculateNoiseStatistics(HeightMap, "HeightMap");
-            CalculateNoiseStatistics(TemperatureMap, "TemperatureMap");
-            CalculateNoiseStatistics(RainfallMap, "RainfallMap");
+            CalculateNoiseStatistics(TemperatureMap, "TempMap");
+            CalculateNoiseStatistics(RainfallMap, "RainMap");
             CalculateNoiseStatistics(RiverMap, "RiverMap");
             CalculateNoiseStatistics(LakeMap, "LakeMap");
 
@@ -63,28 +63,36 @@ namespace TalosEvo.EvoUtil.generator
                     float nx = x / (float)width;
                     float ny = y / (float)height;
 
-                    HeightMap[x, y] = noise.Noise(nx * 5, ny * 5, amplitudeScaling: 2.0f);
-                    TemperatureMap[x, y] = noise.Noise(nx * 5 + 100, ny * 5 + 100, amplitudeScaling: 2.0f);
-                    RainfallMap[x, y] = noise.Noise(nx * 5 + 50, ny * 5 + 50, amplitudeScaling: 2.0f);
+                    HeightMap[x, y] = noise.Noise(nx * 5, ny * 5, persistence: 0.6f, amplitudeScaling: 2f, frequencyScaling: 0.65f);
+                    TemperatureMap[x, y] = noise.Noise(nx * 5 + 100, ny * 5 + 100, persistence: 0.6f, amplitudeScaling: 2f, frequencyScaling: 0.65f);
+                    RainfallMap[x, y] = noise.Noise(nx * 5 + 50, ny * 5 + 50, persistence: 0.6f, amplitudeScaling: 2f, frequencyScaling: 0.65f);
                 }
             }
+            HeightMap = NormalizeNoise(HeightMap, "HeightMap");
+            TemperatureMap = NormalizeNoise(TemperatureMap, "TempMap");
+            RainfallMap = NormalizeNoise(RainfallMap, "RainMap");
         }
 
         // TODO: Parametarize generation variables instead of randomize
         private void GenerateRiversAndLakes()
         {
-            for (int i = 0; i < random.NextInt64(20, 50); i++) // Random number of rivers
+            for (int i = 0; i < 25; i++) // Random number of rivers
             {
                 int startX = random.Next(width);
                 int startY = random.Next(height);
-                GenerateRiver(startX, startY);
+                while (HeightMap[startX,startY] <= 0.5f || RainfallMap[startX, startY] <= 0.3f || TemperatureMap[startX, startY] <= 0.2f)
+                {
+                    startX = random.Next(width);
+                    startY = random.Next(height);
+                }
+                GenerateRiver(startX, startY, 1);
             }
 
             for (int x = 0; x < width; x++)
             {
                 for (int y = 0; y < height; y++)
                 {
-                    if (HeightMap[x, y] < 0.25f && !RiverMap[x, y]) // Arbitrary threshold for lakes
+                    if (HeightMap[x, y] < 0.30f && RainfallMap[x,y] > 0.3f && TemperatureMap[x,y] > 0.3f) // Arbitrary threshold for lakes
                     {
                         LakeMap[x, y] = true;
                     }
@@ -92,15 +100,15 @@ namespace TalosEvo.EvoUtil.generator
             }
         }
 
-        private void GenerateRiver(int startX, int startY)
+        private void GenerateRiver(int startX, int startY, int riverWidth)
         {
             int x = startX;
             int y = startY;
-            for (int i = 0; i < random.NextInt64(200, 1000); i++) // Random River length
+            for (int i = 0; i < 1000; i++) // Arbitrary river length
             {
                 if (x < 0 || x >= width || y < 0 || y >= height) break;
 
-                RiverMap[x, y] = true;
+                MarkRiver(x, y, riverWidth);
 
                 // Find the steepest descent
                 int nextX = x;
@@ -129,6 +137,67 @@ namespace TalosEvo.EvoUtil.generator
                 x = nextX;
                 y = nextY;
             }
+        }
+
+        private void MarkRiver(int x, int y, int riverWidth)
+        {
+            for (int dx = -riverWidth; dx <= riverWidth; dx++)
+            {
+                for (int dy = -riverWidth; dy <= riverWidth; dy++)
+                {
+                    int nx = x + dx;
+                    int ny = y + dy;
+                    if (nx >= 0 && nx < width && ny >= 0 && ny < height)
+                    {
+                        RiverMap[nx, ny] = true;
+                    }
+                }
+            }
+        }
+
+        public float[,] NormalizeNoise(float[,] noiseArray, string arrayName)
+        {
+            if (noiseArray == null || noiseArray.Length == 0)
+            {
+                logger.Error($"Empty noise array in Normalize method: {arrayName}");
+            }
+
+            int width = noiseArray.GetLength(0);
+            int height = noiseArray.GetLength(1);
+
+            float min = float.MaxValue;
+            float max = float.MinValue;
+
+            // Find min and max values
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    float value = noiseArray[x, y];
+                    if (value < min)
+                    {
+                        min = value;
+                    }
+                    if (value > max)
+                    {
+                        max = value;
+                    }
+                }
+            }
+
+            float range = max - min;
+            float[,] normalizedNoise = new float[width, height];
+
+            // Normalize the values
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    normalizedNoise[x, y] = (noiseArray[x, y] - min) / range;
+                }
+            }
+
+            return normalizedNoise;
         }
 
         public Biome[,] GenerateBiomeMap()
