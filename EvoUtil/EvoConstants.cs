@@ -55,7 +55,6 @@ namespace TalosEvo.EvoUtil
                     Biome.Grassland => Color.LightGreen,
                     Biome.Tundra => Color.LightGray,
                     Biome.Mountain => Color.Brown,
-                    Biome.River => Color.Blue,
                     Biome.Lake => Color.DarkBlue,
                     Biome.Jungle => Color.DarkGreen,
                     Biome.Savannah => Color.PaleGreen,
@@ -63,6 +62,7 @@ namespace TalosEvo.EvoUtil
                     Biome.ConiferousForest => Color.LightSeaGreen,
                     Biome.Arctic => Color.GhostWhite,
                     Biome.TemperateForest => Color.Green,
+                    Biome.River => Color.Blue,
                     _ => Color.Black,
                 };
             }
